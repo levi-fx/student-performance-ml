@@ -73,3 +73,10 @@ student-performance-ml/
 - Add hyperparameter tuning (GridSearchCV)
 - Try the same pipeline on the Portuguese-subject dataset
 - Build a Streamlit app for live predictions
+
+## Demo App
+A Streamlit app predicts a student's final mark and risk group.
+
+    cd app
+    pip install -r requirements.txt
+    streamlit run app.py
