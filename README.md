@@ -29,3 +29,8 @@ Source: https://archive.ics.uci.edu/dataset/320/student+performance
 
 ## How to run
 Open the notebook in Google Colab, upload student-mat.csv, run all cells.
+
+## Next Steps
+- Add hyperparameter tuning (GridSearchCV)
+- Try the same pipeline on the Portuguese-subject dataset
+- Build a Streamlit app for live predictions
