@@ -73,6 +73,9 @@ student-performance-ml/
 - Add hyperparameter tuning (GridSearchCV)
 - Try the same pipeline on the Portuguese-subject dataset
 
+- ## Live demo
+- https://student-performance-ml-pzgta9fdfpyjgazxblnnxa.streamlit.app/
+
 ## Demo App
 A Streamlit app predicts a student's final mark and risk group.
 
