@@ -1,15 +1,18 @@
 import joblib
 import pandas as pd
 import streamlit as st
+from pathlib import Path
 
 st.set_page_config(page_title="Student Risk Predictor", page_icon="🎓")
 
 # ---------- Load the saved models ----------
+BASE = Path(__file__).parent
+
 @st.cache_resource
 def load_models():
-    model = joblib.load("app_model.pkl")
-    scaler = joblib.load("cluster_scaler.pkl")
-    km = joblib.load("kmeans.pkl")
+    model = joblib.load(BASE / "app_model.pkl")
+    scaler = joblib.load(BASE / "cluster_scaler.pkl")
+    km = joblib.load(BASE / "kmeans.pkl")
     return model, scaler, km
 
 app_model, scaler, km = load_models()
@@ -68,7 +71,8 @@ if st.button("Predict"):
     st.metric("Predicted final mark (G3)", f"{g3_pred:.1f} / 20")
     st.write(f"**Risk group:** {group}")
     st.info(advice[group])
-        # Habit flags: simple rules based on the Lifestyle-risk cluster profile
+
+    # Habit flags: simple rules based on the Lifestyle-risk cluster profile
     flags = []
     if Dalc >= 3:
         flags.append("high weekday alcohol use")
