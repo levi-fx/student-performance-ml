@@ -2,6 +2,9 @@ import joblib
 import pandas as pd
 import streamlit as st
 from pathlib import Path
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
 
 st.set_page_config(page_title="Student Risk Predictor", page_icon="🎓")
 
@@ -15,6 +18,9 @@ def load_models():
     km = joblib.load(BASE / "kmeans.pkl")
     return model, scaler, km
 
+app_model: GradientBoostingRegressor
+scaler: StandardScaler
+km: KMeans
 app_model, scaler, km = load_models()
 
 APP_COLS = ["studytime", "failures", "absences", "Dalc", "Walc", "goout", "G1", "G2"]
