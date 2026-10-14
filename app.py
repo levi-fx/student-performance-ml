@@ -80,6 +80,8 @@ st.markdown(
     --border-glass:      rgba(255,255,255,0.08);
     --border-glass-hi:   rgba(255,255,255,0.16);
     --warning-amber:     #ffd166;
+    --warning-amber-dim: rgba(255,209,102,0.35);
+    --warning-amber-glow: rgba(255,209,102,0.18);
 }
 
 /* ── Global Streamlit Overrides ── */
@@ -366,12 +368,15 @@ div.stButton > button:active {
 .risk-on-track .pulse-dot { background: var(--void); }
 
 .risk-lifestyle {
-    background: transparent;
-    border: 2px solid var(--neon);
-    color: var(--neon);
-    box-shadow: 0 0 15px rgba(57,255,20,0.2);
+    background: rgba(255,209,102,0.1);
+    border: 2px solid var(--warning-amber);
+    color: var(--warning-amber);
+    box-shadow: 0 0 20px rgba(255,209,102,0.35);
 }
-.risk-lifestyle .pulse-dot { background: var(--neon); }
+.risk-lifestyle .pulse-dot {
+    background: var(--warning-amber);
+    box-shadow: 0 0 8px var(--warning-amber);
+}
 
 .risk-struggling {
     background: var(--alert-red);
@@ -427,6 +432,7 @@ div.stButton > button:active {
 }
 .advice-box.lifestyle {
     border-left-color: var(--warning-amber);
+    background: rgba(255,209,102,0.04);
 }
 
 /* ── Classification Tiers ── */
@@ -452,6 +458,12 @@ div.stButton > button:active {
     border-color: rgba(57,255,20,0.4);
     background: rgba(57,255,20,0.08);
     box-shadow: 0 0 12px rgba(57,255,20,0.08);
+}
+.tier-item.active-yellow {
+    opacity: 1;
+    border-color: rgba(255,209,102,0.5);
+    background: rgba(255,209,102,0.1);
+    box-shadow: 0 0 16px rgba(255,209,102,0.16);
 }
 .tier-item.active-red {
     opacity: 1;
@@ -501,6 +513,19 @@ div.stButton > button:active {
     background: rgba(13,14,16,0.4);
     border-radius: 1rem;
     border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+}
+.score-display.glow-neon {
+    border-color: rgba(57,255,20,0.3);
+    box-shadow: 0 0 35px rgba(57,255,20,0.1), inset 0 0 20px rgba(57,255,20,0.03);
+}
+.score-display.glow-yellow {
+    border-color: rgba(255,209,102,0.35);
+    box-shadow: 0 0 35px rgba(255,209,102,0.12), inset 0 0 20px rgba(255,209,102,0.04);
+}
+.score-display.glow-red {
+    border-color: rgba(255,77,77,0.3);
+    box-shadow: 0 0 35px rgba(255,77,77,0.1), inset 0 0 20px rgba(255,77,77,0.03);
 }
 .score-value {
     font-family: 'JetBrains Mono', monospace;
@@ -526,8 +551,9 @@ div.stButton > button:active {
     margin-bottom: 0.5rem;
 }
 
-/* Neon score color for on-track */
+/* Neon score colors with thematic glows */
 .score-neon { color: var(--neon); text-shadow: 0 0 25px rgba(57,255,20,0.45); }
+.score-yellow { color: var(--warning-amber); text-shadow: 0 0 25px rgba(255,209,102,0.6), 0 0 50px rgba(255,209,102,0.25); }
 .score-white { color: var(--off-white); }
 .score-red { color: var(--alert-red); text-shadow: 0 0 25px rgba(255,77,77,0.45); }
 
@@ -904,32 +930,55 @@ elif page == "🧬 Predictor":
             # Determine display styling
             if group == "On track":
                 score_class = "score-neon"
+                display_glow_class = "glow-neon"
                 badge_class = "risk-on-track"
                 advice_class = "advice-box"
-                tier_active = [True, False, False]
+                advice_icon_color = "var(--neon)"
+                tier_classes = ["active", "", ""]
+                tier_labels_style = [
+                    "color:var(--neon); font-weight:700;",
+                    "color:var(--mid-grey);",
+                    "color:var(--mid-grey);",
+                ]
+                tier_dots = [
+                    "background:var(--neon);box-shadow:0 0 8px var(--neon);",
+                    "border:1px solid rgba(255,209,102,0.3);",
+                    "border:1px solid rgba(255,77,77,0.3);",
+                ]
             elif group == "Lifestyle risk":
-                score_class = "score-white"
+                score_class = "score-yellow"
+                display_glow_class = "glow-yellow"
                 badge_class = "risk-lifestyle"
                 advice_class = "advice-box lifestyle"
-                tier_active = [False, True, False]
+                advice_icon_color = "var(--warning-amber)"
+                tier_classes = ["", "active-yellow", ""]
+                tier_labels_style = [
+                    "color:var(--mid-grey);",
+                    "color:var(--warning-amber); font-weight:700;",
+                    "color:var(--mid-grey);",
+                ]
+                tier_dots = [
+                    "border:1px solid rgba(57,255,20,0.3);",
+                    "background:var(--warning-amber);box-shadow:0 0 8px var(--warning-amber);",
+                    "border:1px solid rgba(255,77,77,0.3);",
+                ]
             else:
                 score_class = "score-red"
+                display_glow_class = "glow-red"
                 badge_class = "risk-struggling"
                 advice_class = "advice-box critical"
-                tier_active = [False, False, True]
-
-            # Classification tiers
-            tier_classes = ["", "", ""]
-            tier_labels_color = [
-                "color:var(--neon)",
-                "color:var(--off-white)",
-                "color:var(--alert-red)",
-            ]
-            for i, active in enumerate(tier_active):
-                if active and i < 2:
-                    tier_classes[i] = "active"
-                elif active:
-                    tier_classes[i] = "active-red"
+                advice_icon_color = "var(--alert-red)"
+                tier_classes = ["", "", "active-red"]
+                tier_labels_style = [
+                    "color:var(--mid-grey);",
+                    "color:var(--mid-grey);",
+                    "color:var(--alert-red); font-weight:700;",
+                ]
+                tier_dots = [
+                    "border:1px solid rgba(57,255,20,0.3);",
+                    "border:1px solid rgba(255,209,102,0.3);",
+                    "background:var(--alert-red);box-shadow:0 0 8px var(--alert-red);",
+                ]
 
             # Habit flags
             flags_html = []
@@ -960,7 +1009,7 @@ elif page == "🧬 Predictor":
 </div>"""
 
             output_card_html = f"""<div class="glass-card">
-<div class="score-display">
+<div class="score-display {display_glow_class}">
 <div class="score-label">Final Term Estimate (G3)</div>
 <span class="score-value {score_class}">{g3_pred:.1f}</span>
 <span class="score-suffix">/ 20</span>
@@ -975,25 +1024,25 @@ elif page == "🧬 Predictor":
 <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid-grey);margin-bottom:0.5rem;">Classification Matrix Tiers:</div>
 <div class="tier-grid">
 <div class="tier-item {tier_classes[0]}">
-<div class="tier-dot" style="background:var(--neon);box-shadow:0 0 6px var(--neon);"></div>
-<div class="tier-label" style="{tier_labels_color[0]}">On Track</div>
+<div class="tier-dot" style="{tier_dots[0]}"></div>
+<div class="tier-label" style="{tier_labels_style[0]}">On Track</div>
 <div class="tier-range">14.0 — 20.0</div>
 </div>
 <div class="tier-item {tier_classes[1]}">
-<div class="tier-dot" style="border:1px solid var(--neon);"></div>
-<div class="tier-label" style="{tier_labels_color[1]}">Lifestyle Risk</div>
+<div class="tier-dot" style="{tier_dots[1]}"></div>
+<div class="tier-label" style="{tier_labels_style[1]}">Lifestyle Risk</div>
 <div class="tier-range">10.0 — 13.9</div>
 </div>
 <div class="tier-item {tier_classes[2]}">
-<div class="tier-dot" style="background:var(--alert-red);"></div>
-<div class="tier-label" style="{tier_labels_color[2]}">Struggling</div>
+<div class="tier-dot" style="{tier_dots[2]}"></div>
+<div class="tier-label" style="{tier_labels_style[2]}">Struggling</div>
 <div class="tier-range">0.0 — 9.9</div>
 </div>
 </div>
 </div>
 <div style="margin-top:1rem;">
 <div class="{advice_class}">
-<span class="material-symbols-outlined" style="color:var(--neon);font-size:1rem;vertical-align:middle;margin-right:0.5rem;">lightbulb</span>
+<span class="material-symbols-outlined" style="color:{advice_icon_color};font-size:1rem;vertical-align:middle;margin-right:0.5rem;">lightbulb</span>
 {advice[group]}
 </div>
 </div>
